@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.min.js"></script>
+    <title>Document</title>
+    <style>
+        .btn{
+            background: #fff;
+            border: 1px solid transparent;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            height: 37px;
+        }
+        /* type */
+        .btn-default{
+            background: #007dcc;
+            border-color: #005bb7;
+            color: #fff;
+        }
+        .btn-default:hover{
+            background: #008ddd;
+            border-color: #006bcc;
+        }
+        .btn-danger{
+            background: #e45752;
+            border-color: #bf423d;
+            color: #fff;
+        }
+        .btn-danger:hover{
+            background: #ce534f;
+            border-color: #be4541;
+        }
+        .btn-warning{
+            background: #f99d1a;
+            border-color: #e09226;
+            color: #fff;
+        }
+        .btn-warning:hover{
+            background: #ffa528;
+            border-color: #e2972d;
+        }
+        .btn-success{
+            background: #57ae57;
+            border-color: #52a452;
+            color: #fff;
+        }
+        .btn-success:hover{
+            background: #64c064;
+            border-color: #57a557;
+        }
+        .btn-info{
+            background: #54b9d7;
+            border-color: #429db8;
+            color: #fff;
+        }
+        .btn-info:hover{
+            background: #64c6e4;
+            border-color: #479db8;
+        }
+        /* size */
+        .btn-auto{
+            padding: 10px 12px;
+        }
+        .btn-normal{
+            width: 100px;
+        }
+        .btn-small{
+            width: 80px;
+        }
+        .btn-large{
+            width: 150px;
+        }
+        .btn-long{
+            width: 100%;
+        }
+        .btn-disabled{
+            background: #f7f7f7;
+            border-color: #d7dde4;
+            cursor: not-allowed;
+            color: #c9d0da;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h2>type</h2>
+        <i-button>default</i-button>
+        <i-button type="danger">danger</i-button>
+        <i-button type="warning">warning</i-button>
+        <i-button type="success">success</i-button>
+        <i-button type="info">info</i-button>
+        <h2>size</h2>
+        <i-button size="small">small</i-button>
+        <i-button size="normal">normal</i-button>
+        <i-button size="large">large</i-button>
+        <i-button size="auto" @click="handle">auto</i-button>
+        <h2>long</h2>
+        <i-button long>long</i-button>
+        <h2>disabled</h2>
+        <i-button disabled>disabled</i-button>
+    </div>
+    <script>
+        Vue.component('iButton',{
+            props:{
+                type:{
+                    type:String,
+                    default:'default',
+                },
+                size:{
+                    type:String,
+                    default:'normal',
+                },
+                long:Boolean,
+                disabled:Boolean,
+            },
+            template:`
+                <button :class="classes" @click="handle($event)">
+                    <slot></slot>
+                </button>
+            `,
+
+            methods:{
+                handle(e){
+                    if(!this.disabled){
+                        console.log(this.$el.innerText)
+                        this.$emit('click',e);
+                    }
+                },
+            },
+
+            computed:{
+                classes(){
+                    return [
+                        'btn',
+                        {
+                            ['btn-' + this.type]:this.type && !this.disabled,
+                            ['btn-' + this.size]:this.size,
+                            'btn-long':this.long,
+                            'btn-disabled':this.disabled,
+                        }
+                    ];
+                },
+            },
+        })
+
+        new Vue({
+            el:'.app',
+            methods:{
+                handle(e){
+                    console.log(e.target.innerText)
+                },
+            },
+        })
+    </script>
+</body>
+</html>

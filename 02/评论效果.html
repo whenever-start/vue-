@@ -5,9 +5,296 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <script src="../vue.min.js"></script>
-    <title>Document</title>
+    <title>vue-评论效果</title>
+    <style>
+        ul{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+        .app {
+            width: 600px;
+            padding: 15px;
+            margin: 10px auto 0;
+        }
+        .red{
+            color: red;
+            font-size: 12px;
+        }
+
+        /* comment-content */
+        .comment-content_show-list{
+            border: 1px solid #333;
+            height: 600px;
+            overflow-y: auto;
+        }
+        .comment-content_show-list>li{
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ccc;
+        }
+        /* last-li-border */
+        .comment-content_show-list>li:last-child{
+            border-bottom: none;
+        }
+
+        .comment-contnet_show-avatar{
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ccc;
+        }
+        .comment-contnet_show-avatar>img{
+            width: 100%;
+            display: block;
+        }
+
+        .comment-contnet_show-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding-left: 20px;
+        }
+        .comment-contnet_show-main .user-comment{
+            margin-top: 10px;
+        }
+
+        .comment-content_show-pushtime{
+            color: #ddd;
+            font-size: 12px;
+        }
+        /* comment-content end */
+        /* comment-edit */
+        .comment-edit-editor{
+            width: 100%;
+            height: 120px;
+            resize: none;
+        }
+        .comment-edit-button_wrap{
+            display: flex;
+            justify-content: flex-end;
+        }
+        .btn-send{
+            position: relative;
+        }
+        .btn-send .btn-send-enter_tab{
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            width: 12px;
+            height: 12px;
+            background: green;
+        }
+        .enter_tab-pop{
+            position: absolute;
+            left: 0;
+            top: 100%;
+        }
+        .comment-edit-avatar_selector{
+            position: relative;
+            margin-top: 35px;
+        }
+        .comment-edit-avatar_selector .selector_button{
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ccc;
+            cursor: pointer;
+        }
+        .comment-edit-avatar_selector .selector_button img{
+            width: 100%;
+            display: block;
+        }
+        .comment-edit-avatar_selector .selector_pop{
+            position: absolute;
+            top: -35px;
+            left: 0;
+        }
+        .comment-edit-avatar_selector .selector_pop ul{
+            display: flex;
+            position: absolute;
+        }
+        .comment-edit-avatar_selector .selector_pop ul>li{
+            margin: 0 5px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #ccc;
+            cursor: pointer;
+        }
+        .comment-edit-avatar_selector .selector_pop ul>li img{
+            width: 100%;
+            display: block;
+        }
+        /* comment-edit end */
+
+    </style>
 </head>
 <body>
-    
+    <div id="app" class="app">
+        <!-- 评论内容展示区 -->
+        <section class="comment-content_show">
+            <ul class="comment-content_show-list">
+                <li v-for="item in comments" :key="item.id">
+                    <div class="comment-contnet_show-avatar">
+                        <img :src="item.u_avatar">
+                    </div>
+                    <div class="comment-contnet_show-main">
+                        <div class="user_name">
+                            {{item.u_name}}
+                        </div>
+                        <div class="user-comment">
+                            {{item.u_comment}}
+                        </div>
+                    </div>
+                    <div class="comment-content_show-pushtime">
+                        {{item.u_pushtime}}
+                    </div>
+                </li>
+            </ul>
+        </section>
+        <!-- 评论编辑区 -->
+        <section class="comment-edit">
+            <div>用户名<input type="text" v-model="edit.u_name"><div class="red">{{err.input}}</div></div>
+            <div class="comment-edit-avatar_selector">
+                <div class="selector_button" @click="show = !show">
+                    <img :src="edit.u_avatar">
+                </div>
+                <div class="selector_pop" v-show="show">
+                    <ul>
+                        <li v-for="item in avatars" @click="selectAvatar(item)"><img :src="item"></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="red">{{err.comment}}</div>
+            <textarea class="comment-edit-editor" v-model="edit.u_comment" @keyup.ctrl.enter="send"></textarea>
+            <div class="comment-edit-button_wrap">
+                <div class="btn-send">
+                    <button @click="send">发送</button>
+                    <div class="btn-send-enter_tab" @click="enterTabState = !enterTabState"></div>
+                    <div class="enter_tab-pop" v-show="enterTabState">
+                        <div>enter</div>
+                        <div>ctrl+enter</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        new Vue({
+            el:'#app',
+
+            methods:{
+                send(){
+                    if(!this.edit.u_name){
+                        this.err.input = '用户名不能为空'
+                        return;
+                    }else{
+                        this.err.input = ''
+                    }
+                    if(!this.edit.u_comment){
+                        this.err.comment = '不能发送空内容';
+                        return;
+                    }else{
+                        this.err.comment = '';
+                    }
+                    this.edit.u_pushtime = this.pushtime();
+                    this.comments.push(this.edit);
+                    this.edit = {
+                        id:this.countId,
+                        u_avatar:'',
+                        u_name:'',
+                        u_comment:'',
+                        u_pushtime:'',
+                    };
+                    setTimeout(() => {
+                        let div = document.querySelector('.comment-content_show-list');
+                        div.scrollTop = div.scrollHeight;
+                    }, 100);
+                },
+                selectAvatar(item){
+                    this.edit.u_avatar = item;
+                    this.show = false;
+                },
+                pushtime(){
+                    let d = new Date();
+                    mon = d.getMonth() + 1;
+                    date = d.getDate();
+                    hours = d.getHours();
+                    min = d.getMinutes();
+                    sec = d.getSeconds();
+                    let str = mon + '月' + date + '日' + hours + ':' + min + ':' + sec
+                    return str;
+                },
+            },
+
+            data:{
+                enterTabState:false,
+                err:{
+                    input:'',
+                    comment:'',
+                },
+                show:false,
+                avatarSelector:'http://bpic.588ku.com/element_origin_min_pic/17/06/17/8b91e3acb380d9cd4de59796f6c035cb.jpg',
+                avatars:[
+                'http://bpic.588ku.com/element_origin_min_pic/17/06/17/8b91e3acb380d9cd4de59796f6c035cb.jpg', 
+                'http://2.pic.pc6.com/up/2015-10/2015102316374.jpg',
+                'https://www.joomlagate.com/media/kunena/avatars/gallery/bunny.png',
+                'https://fs2.fmshoes.com.tw/upload/ftp/photo/img/00006445-C01.jpg',
+                'https://pic.cr173.com/up/2018-5/2018525758153781.png'
+                ],
+                edit:{
+                    id:this.countId,
+                    u_avatar:'',
+                    u_name:'',
+                    u_comment:'',
+                    u_pushtime:'',
+                },
+                comments:[
+                    {
+                        id:1,
+                        u_avatar:'http://bpic.588ku.com/element_origin_min_pic/17/06/17/8b91e3acb380d9cd4de59796f6c035cb.jpg',
+                        u_name:'殷桃王子',
+                        u_comment:'生日快乐',
+                        u_pushtime:'3月22日8:19',
+                    },
+                    {
+                         id:2,
+                        u_avatar:'http://2.pic.pc6.com/up/2015-10/2015102316374.jpg',
+                        u_name:'卒就小资',
+                        u_comment:'记得之前老羊说过 p神其实并不是很富有，但可以看出p神是真的很爱dota这游戏和他的粉丝们，但就是头太铁了',
+                        u_pushtime:'7月18日18:19',
+                    },
+                    {
+                         id:3,
+                        u_avatar:'https://www.joomlagate.com/media/kunena/avatars/gallery/bunny.png',
+                        u_name:'晴天雨u',
+                        u_comment:'直接打我卡上，没有中间商赚差价',
+                        u_pushtime:'2月28日14:19',
+                    },
+                    {
+                         id:4,
+                        u_avatar:'https://pic.cr173.com/up/2018-5/2018525758153781.png',
+                        u_name:'hello Kitty',
+                        u_comment:'没啥影响吧，我的印象中P神想上分简直太轻松了',
+                        u_pushtime:'5月18日18:20',
+                    },
+                ],
+            },
+
+            computed:{
+                
+                countId(){
+                    return this.comments.length - 1
+                },
+            },
+        })
+    </script>
 </body>
 </html>
