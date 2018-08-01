@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.min.js"></script>
+    <title>banner</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul {
+            list-style: none;
+        }
+        a{
+            text-decoration: none;
+        }
+
+        .banner{
+            position: relative;
+        }
+        .banner-list>li{
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        .banner-list>li a{
+            display: block;
+            width: 100%;
+            height: 100%;
+            background-repeat: no-repeat;
+            background-position: 0px center;
+            background-size: cover;
+        }
+        /* banner-slider */
+        .banner-slider{
+            position: absolute;
+            right: 0;
+            top: 0;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .banner-figcaptionList{
+            width: 240px;
+            padding: 20px 0;
+            background: linear-gradient(to bottom,
+            rgba(255,255,255,.2),
+            rgba(255,255,255,.8) 10%,
+            rgba(255,255,255,.8) 90%,
+            rgba(255,255,255,.2) 100%)
+        }
+        .banner-figcaptionList>li{
+            line-height: 30px;
+            font-size: 14px;
+        }
+        .banner-figcaptionList>li>a{
+            display: flex;
+            padding: 0 15px;
+        }
+        .banner-figcaptionList>li .tit{
+            flex-shrink: 0;
+        }
+        .banner-figcaptionList>li .tit:after{
+            content: ':';
+            margin-right: 5px;
+        }
+        .banner-figcaptionList>li .txt{
+            overflow:hidden;
+            word-wrap:normal;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+        }
+        
+        /* active/cur */
+        .banner-figcaptionList>li>a.cur{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            height: 74px;
+            background: #f9f9f9;
+        }
+        .banner-figcaptionList>li>a.cur .tit{
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff6428;
+            overflow:hidden;
+            word-wrap:normal;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+        }
+        .banner-figcaptionList>li>a.cur .tit:after{
+            content: '';
+            margin-right: 0;
+        }
+        .banner-figcaptionList>li>a.cur .txt{
+
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <cus-banner :banners="banners"></cus-banner>
+    </div>
+
+    <script>
+        Vue.component('cus-banner',{
+            template:`
+                <div class="banner">
+                    <div class="banner_box" :style="{height:height}">
+                        <ul class="banner-list">
+                            <li
+                                v-for="(item,index) in banners"
+                                :key="item.id"
+                                v-show="bannerIndex === index"
+                            >
+                                <a 
+                                    :href="item.link"
+                                    :style="{
+                                        backgroundImage:'url(' + item.url + ')',
+                                        backgroundColor:item.bgColor,
+                                    }"
+                                ></a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="banner-slider">
+                        <ul class="banner-figcaptionList">
+                            <li v-for="(item,index) in banners"
+                                :key="index"
+                                @mouseover="over(index)"
+                                @mouseout="out"
+                            >
+                                <a :href="item.link" :class="{cur:bannerIndex === index}">
+                                    <div class="tit">{{item.figcaption}}</div>
+                                    <div class="txt">{{item.alt}}</div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            `,
+
+            props:{
+                banners:{
+                    type:Array,
+                    required:true,
+                },
+                interval:{
+                    type:Number,
+                    default:3000,
+                },
+                height:{
+                    type:String,
+                    default:'400px',
+                },
+            },
+
+
+            data(){
+                return{
+                    bannerIndex:0,
+                    timer:1,
+                }
+            },
+
+            methods:{
+                over(index){
+                    clearInterval(this.timer);
+                    this.bannerIndex = index;
+                },
+                out(){
+                    this.timer = setInterval(()=>{
+                        this.bannerIndex++;
+                        this.bannerIndex %= this.banners.length;
+                    },this.interval);
+                }
+            },
+
+            mounted(){
+                this.timer = setInterval(()=>{
+                    this.bannerIndex++;
+                    this.bannerIndex %= this.banners.length;
+                },this.interval);
+            },
+        })
+        // 实例
+        new Vue({
+            el:'.app',
+            
+            data:{
+                banners:[
+                    {
+                        id:1,
+                        url:'https://puui.qpic.cn/tv/0/29565096_1680580/0',
+                        bgColor:'#0d0903',
+                        figcaption:'扶摇',
+                        alt:'杨幂阮经天热血燃情战五洲12345678',
+                        link:'https://v.qq.com/x/cover/639agzdh10yu2q2.html',
+                    },
+                    {
+                        id:2,
+                        url:'https://img1.gtimg.com/tv/pics/hv1/18/165/2285/148624218.jpg',
+                        bgColor:'#ff9002',
+                        figcaption:'甜蜜暴击',
+                        alt:'鹿晗变身格斗系学长',
+                        link:'',
+                    },
+                    {
+                        id:3,
+                        url:'https://puui.qpic.cn/tv/0/30032680_1680580/0',
+                        bgColor:'#523921',
+                        figcaption:'沙海',
+                        alt:'吴磊秦昊大漠决斗神秘生物',
+                        link:'https://v.qq.com/x/cover/2cy4xg8ywpb47dw.html',
+                    },
+                    {
+                        id:4,
+                        url:'https://puui.qpic.cn/tv/0/30892406_1680580/0',
+                        bgColor:'#b9ce6c',
+                        figcaption:'我的军旅梦',
+                        alt:'大学生变身新军战士',
+                        link:'',
+                    },
+                    {
+                        id:5,
+                        url:'https://puui.qpic.cn/vupload/0/20180727_1532776711094.jpeg/0',
+                        bgColor:'#0d0920',
+                        
+                        figcaption:'明日之子',
+                        alt:'九大厂牌候选人争夺战',
+                        link:'https://v.qq.com/x/cover/6j9nc4m5yafdt18.html',
+                    },
+                    {
+                        id:6,
+                        url:'https://img1.gtimg.com/tv/pics/hv1/211/94/2283/148476256.jpg',
+                        bgColor:'#130502',
+                        
+                        figcaption:'猎毒人',
+                        alt:'于和伟复仇pk毒枭徐峥',
+                        link:'https://v.qq.com/x/cover/hjzdq17ra8geuwl.html',
+                    },
+                    {
+                        id:7,
+                        url:'https://puui.qpic.cn/vupload/0/20180731_1533024656343/0',
+                        bgColor:'#000000',
+                        figcaption:'我们的侣行',
+                        alt:'夫妻俩办和平音乐会',
+                        link:'https://v.qq.com/x/cover/j5nzed21yr39754/c0027izvh63.html',
+                    },
+                    {
+                        id:8,
+                        url:'https://puui.qpic.cn/vupload/0/20180728_1532783831464.jpeg/0',
+                        bgColor:'#0b0c0e',
+                        figcaption:'黄子韬深证演唱会',
+                        alt:'8月4日直播',
+                        link:'http://v.qq.com/live/p/topic/54651/preview.html',
+                    },
+                    {
+                        id:9,
+                        url:'https://puui.qpic.cn/vupload/0/20180726_1532590033373.jpeg/0',
+                        bgColor:'#9bc9e1',
+                        figcaption:'VIP季卡仅45元',
+                        alt:'抽卡赢惊喜好礼',
+                        link:'https://film.qq.com/film/p/topic/modaozushi2/index.html?ptag=v.focus',
+                    },
+                    {
+                        id:10,
+                        url:'https://puui.qpic.cn/vupload/0/20180730_1532946918381.jpeg/0',
+                        bgColor:'#e0d6cc',
+                        figcaption:'请与这样的我恋爱吧',
+                        alt:'护士似郑爽',
+                        link:'https://v.qq.com/x/page/f00277sj2bn.html',
+                    },
+                ],
+            },
+
+        })
+    </script>
+</body>
+</html>

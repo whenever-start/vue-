@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.min.js"></script>
+    <title>table组件</title>
+    <style>
+        .table thead tr{
+            background: #f5f7f9;
+        }
+        .table th{
+            text-align: left;
+            width: 33.33%;
+        }
+        .table{
+            border: 1px solid #d7dde4;
+        }
+        .table tr{
+            border-color: #e3e8ee;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <custom-table :column="column" :data="data"></custom-table>
+    </div>
+    <script>
+        Vue.component('custom-table',{
+            template:`
+                <table class="table" border="1px" cellpadding="10px" cellspacing="0" rules="rows" width="100%">
+                    <thead>
+                        <tr>
+                            <th v-for="(th,index) in column"
+                                :key="index"
+                            >
+                                {{th.label}}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="item in data"
+                            :key="item.id"
+                        >
+                            <td v-for="th in column">
+                                {{ item[th.key] }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            `,
+
+            props:{
+                column:{
+                    type:Array,
+                    required:true,
+                },
+                data:{
+                    type:Array,
+                },
+            },
+
+        })
+
+        // 实例
+        new Vue({
+            el:'.app',
+            data:{
+                column:[
+                    {
+                        label:'姓名',
+                        key:'name'
+                    },
+                    {
+                        label:'年龄',
+                        key:'age'
+                    },
+                    {
+                        label:'地址',
+                        key:'address'
+                    },
+                ],
+                data:[
+                    {
+                        id:1,
+                        name:'小明',
+                        age:19,
+                        address:'北京市朝阳区芍药居'
+                    },
+                    {
+                        id:2,
+                        name:'小李',
+                        age:22,
+                        address:'广州市白云区'
+                    },
+                    {
+                        id:3,
+                        name:'小张',
+                        age:21,
+                        address:'广州市天河区'
+                    },
+                    {
+                        id:4,
+                        name:'小赵',
+                        age:17,
+                        address:'广州市荔湾区'
+                    },
+                ],
+            },
+        })
+    </script>
+</body>
+</html>
