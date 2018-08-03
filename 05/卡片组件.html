@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.min.js"></script>
+    <title>卡片组件</title>
+    <style>
+        .card {
+            
+        }
+        .card:hover{
+            /* box-shadow: 0 0 0 1px #eee,0 0 0 2px #f2f2f2; */
+            box-shadow: 0 1px 6px rgba(0,0,0,.2);
+            border-color: #eee;
+        }
+        .card-hd,
+        .card-content{
+            position: relative;
+            padding: 20px 15px;
+            border-bottom: 1px solid #e8eaec;
+        }
+        /* 边框 */
+        .card-bordered{
+            border: 1px solid #e8eaec;
+        }
+
+        /* 实例样式 */
+        .card-extra{
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- prop : width -->
+        <i-card width="500px">
+            <div slot="title">标题</div>
+            <div slot="extra" class="card-extra" @click.navive="alert('额外')">额外</div>
+            <div>内容</div>
+        </i-card>
+        <!-- prop : bordered -->
+        <i-card width="500px" :bordered="false">
+            <div slot="title">标题</div>
+            <div slot="extra" class="card-extra">额外</div>
+            <div>内容</div>
+        </i-card>
+    </div>
+    <script>
+        Vue.component('i-card',{
+            template:`
+                <div :class="classes" :style="styles">
+                    <div class="card-hd">
+                        <slot name="title"></slot>
+                        <slot name="extra"></slot>
+                    </div>
+                    <div class="card-content">
+                        <slot></slot>
+                    </div>
+                </div>
+            `,
+
+            props:{
+                width:{
+                    type:String,
+                    default:'100%',
+                },
+                bordered:{
+                    type:Boolean,
+                    default:true,
+                },
+            },
+
+            computed:{
+                styles(){
+                    return [
+                        {
+                            width:this.width,
+                        }
+                    ]
+                },
+                classes(){
+                    return [
+                        'card',
+                        {
+                            'card-bordered':this.bordered,
+                        }
+                    ]
+                },
+            },
+        })
+
+        // 实例
+        new Vue({
+            el:'.app',
+        })
+    </script>
+</body>
+</html>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <script src="../vue.min.js"></script>
+    <title>page组件</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        ul{
+            list-style: none;
+        }
+
+        .page{
+            display: flex;
+            align-items: center;
+        }
+        .page-list{
+            display: flex;
+            margin: 0 10px;
+        }
+        .page-list>li{
+            /* width: 20px;
+            height: 20px;
+            line-height: 20px; */
+            padding: 6px 10px;
+            text-align: center;
+            margin: 0 2px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+
+        .page-list>li.cur,
+        .page-list>li:hover{
+            color: #34a9f7;
+            border-color: #34a9f7;
+        }
+
+        /* 上一页/下一页 */
+        .page-prev_btn,
+        .page-next_btn{
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            cursor: pointer;
+        }
+        .page-prev_btn:hover,
+        .page-next_btn:hover,
+        .page-prev_btn.cur,
+        .page-next_btn.cur{
+            padding: 6px 10px;
+            border: 1px solid #34a9f7;
+        }
+        .page-btn-disabled,
+        .page-btn-disabled:hover{
+            cursor: not-allowed;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <i-page :total="100" @num="handlePage"></i-page>
+        <div>页数:{{pageNum}}</div>
+    </div>
+    <script>
+        const prefixCls = 'page';
+        Vue.component('i-page',{
+            template:`
+                <div class="page">
+                    <div class="page-prev_btn" @click="prev" :class="{'page-btn-disabled':pageIndex === 1}">上一页</div>
+                    <ul class="page-list">
+                        <li 
+                            v-for="index in total/size"
+                            :class="{cur:index === pageIndex}"
+                            :key="index"
+                            @click.exact="go(index)">
+                            {{index}}
+                        </li>
+                    </ul>
+                    <div class="page-next_btn" @click="next" :class="{'page-btn-disabled':pageIndex === total/size}">下一页</div>
+                </div>
+            `,
+
+            data(){
+                return{
+                    pageIndex:1,
+                }
+            },
+
+            props:{
+                total:{
+                    type:Number,
+                    required:true,
+                },
+                size:{
+                    type:Number,
+                    default:10,
+                },
+            },
+
+            mounted(){
+                this.$emit('num',this.pageIndex)
+            },
+
+            methods:{
+                go(index){
+                    this.pageIndex = index;
+                    this.$emit('num',this.pageIndex)
+                },
+                next(index){
+                    if(this.pageIndex < this.total / this.size){
+                        this.pageIndex++;
+                    }
+                    this.$emit('num',this.pageIndex)
+                },
+                prev(index){
+                    if(this.pageIndex > 1){
+                        this.pageIndex--;
+                    }
+                    this.$emit('num',this.pageIndex)
+                }
+            },
+        })
+
+        // 实例
+        new Vue({
+            el:'#app',
+            data:{
+                pageNum:'',
+            },
+
+            methods:{
+                handlePage(num){
+                    this.pageNum = num;
+                },
+            },
+        })
+    </script>
+</body>
+</html>
