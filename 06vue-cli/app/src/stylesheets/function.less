@@ -1,0 +1,171 @@
+@import './base.less';
+
+// 内容居中
+.center(@w:@base-width){
+	width: @w;
+	margin: 0 auto;
+}
+
+// hover active color
+.hover-color(@cl,@light:8%){
+	color: @cl;
+	&:hover{
+		color:lighten(@cl,@light);
+	}
+}
+.hover-bg(@cl,@light:8%){
+	background: @cl;
+	&:hover{
+		background:lighten(@cl,@light);
+	}
+}
+.cur-color(@cl,@light:8%){
+	color: @cl;
+	&.cur{
+		color:darken(@cl,@light);
+	}
+}
+.cur-bg(@cl,@light:8%){
+	background: @cl;
+	&.cur{
+		background:darken(@cl,@light);
+	}
+}
+
+// 字体/文本
+.font(@s,@cl,@line-height:1em){
+	font-size: @s;
+	color: @cl;
+	line-height: @line-height;
+}
+
+// flex
+.flex(){
+	display:-webkit-box;
+    display:-ms-flexbox;
+    display:flex;
+}
+.flex-sbc(){
+	display:-webkit-box;
+    display:-ms-flexbox;
+	display:flex;
+	justify-content: space-between;
+	align-items: center;
+}
+.flex-hsb(){
+	display:-webkit-box;
+    display:-ms-flexbox;
+	display:flex;
+	justify-content: space-between;
+}
+.flex-vc(){
+	display:-webkit-box;
+    display:-ms-flexbox;
+	display:flex;
+	align-items: center;
+}
+.flex-col(){
+	display:-webkit-box;
+    display:-ms-flexbox;
+	display:flex;
+	flex-direction:column;
+}
+
+// 边距
+.padding-lr(@space:@base-padding){
+	padding-left: unit(@space,px);
+	padding-right: unit(@space,px);
+}
+.padding-tb(@space:@base-padding){
+	padding-top: @space;
+	padding-bottom: @space;
+}
+.margin-tb(@space:@base-margin){
+	margin-top: @space;
+	margin-bottom: @space;
+}
+.margin-lr(@space:@base-margin){
+	margin-left: @space;
+	margin-right: @space;
+}
+
+// 头像
+.avatar(@s){
+	width: @s;
+	height: @s;
+	border-radius: 50%;
+	overflow: hidden;
+	background-color: @cl-img;
+	&>img{
+		width: 100%;
+		display: block;
+	}
+}
+.img(@w,@h){
+	width: @w;
+	height: @h;
+	overflow: hidden;
+	&>img{
+		width: 100%;
+		display: block;
+	}
+}
+.bg(@w,@h){
+	width: @w;
+	height: @h;
+	background-repeat: no-repeat;
+	background-position: center 0;
+	// background-size: cover;
+}
+
+
+// 图标
+.icon(@w,@h){
+	width: @w;
+	height: @h;
+	display: inline-block;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: contain;
+}
+
+// 圆形
+.circle(@s,@cl){
+	width: @s;
+	height: @s;
+	border-radius: 50%;
+	background-color: @cl;
+}
+
+// 按钮
+.button(@w,@h,@r){
+	width: @w;
+	height: @h;
+	text-align: center;
+	line-height: @h;
+	border-radius: @r;
+	cursor: pointer;
+}
+
+// 文本 控制函数
+.wes() { /* 多出部分用省略号表示 , 用于一行 */
+    overflow:hidden;
+    word-wrap:normal;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.single_line(){
+	overflow:hidden;
+    word-wrap:normal;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+}
+.multi_line(@line,@lineheight){
+	display: -webkit-box;/* 适用于webkit内核和移动端 */
+    -webkit-box-orient: vertical;
+	-webkit-line-clamp: @line;
+	// if 不兼容
+    overflow: hidden;
+	height: @line * @lineheight;
+	line-height: @lineheight;
+}
